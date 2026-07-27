@@ -1,0 +1,373 @@
+@import 'tailwindcss';
+
+/* ===========================================================================
+   Mounaqasat design system
+
+   Intent: a dense, data-forward workspace — closer to a trading terminal than
+   to a marketing site. Suppliers live in this UI for hours scanning hundreds of
+   notices, so the rules are: high information density, one accent colour used
+   sparingly, deadlines encoded in colour, and typography that makes numbers
+   line up. Works in light and dark, LTR (French) and RTL (Arabic).
+   =========================================================================== */
+
+@theme {
+  /* --- Neutrals: cool graphite. The whole UI is built on these. --------- */
+  --color-ink-50: #f7f8fa;
+  --color-ink-100: #eff1f5;
+  --color-ink-150: #e7eaf0;
+  --color-ink-200: #dde2ea;
+  --color-ink-300: #c4ccd8;
+  --color-ink-400: #97a1b0;
+  --color-ink-500: #6a7482;
+  --color-ink-600: #4c545f;
+  --color-ink-700: #363c45;
+  --color-ink-750: #2a2f37;
+  --color-ink-800: #21252b;
+  --color-ink-850: #191c21;
+  --color-ink-900: #12151a;
+  --color-ink-950: #0b0d10;
+
+  /* --- Brand: Tunisian crimson, desaturated enough to sit under text. --- */
+  --color-brand-50: #fff1f3;
+  --color-brand-100: #ffe1e5;
+  --color-brand-200: #ffc8cf;
+  --color-brand-300: #ff9daa;
+  --color-brand-400: #f96a7f;
+  --color-brand-500: #e63e56;
+  --color-brand-600: #ce2342;
+  --color-brand-700: #ad1836;
+  --color-brand-800: #8d1730;
+  --color-brand-900: #74172c;
+
+  /* --- Semantic: deadline state is the single most important signal. ---- */
+  --color-live-500: #0f9d68; /* open, comfortable lead time */
+  --color-live-600: #0b7d53;
+  --color-live-100: #d9f5e8;
+  --color-soon-500: #d97706; /* closing within 72h */
+  --color-soon-600: #b45309;
+  --color-soon-100: #fdeecd;
+  --color-gone-500: #8b93a1; /* closed */
+  --color-info-500: #1f7ae0;
+  --color-info-100: #dbeafe;
+
+  /* --- Charts: categorical slots in FIXED order, assigned in sequence and
+         never cycled. These exact hexes are validated (OKLCH lightness band,
+         chroma floor, protanopia/deuteranopia ΔE, normal-vision ΔE, contrast)
+         against this app's own surfaces — #ffffff light, #12151a dark.
+
+         Light mode carries a contrast WARN on slots 3/4/5 (aqua 2.82:1,
+         yellow 2.17:1, magenta 2.69:1), so every chart that uses them ships
+         VISIBLE DIRECT LABELS as the relief channel. Do not drop the labels.
+
+         Re-validate before changing any value:
+           node scripts/validate_palette.js "<hexes>" --mode light --surface "#ffffff"
+      -- */
+  --color-viz-1: #2a78d6; /* blue    */
+  --color-viz-2: #eb6834; /* orange  */
+  --color-viz-3: #1baf7a; /* aqua    */
+  --color-viz-4: #eda100; /* yellow  */
+  --color-viz-5: #e87ba4; /* magenta */
+  --color-viz-6: #008300; /* green   */
+
+  /* --- Type: no webfont fetch. Segoe UI Variable / SF / Noto cover both
+         Latin and Arabic well, so the app builds and runs offline. -------- */
+  --font-sans:
+    ui-sans-serif, system-ui, 'Segoe UI Variable Text', 'Segoe UI', Roboto,
+    'Noto Sans Arabic', 'Noto Kufi Arabic', 'Helvetica Neue', Arial, sans-serif;
+  --font-mono:
+    ui-monospace, 'Cascadia Mono', 'SF Mono', 'JetBrains Mono', Consolas,
+    'Liberation Mono', monospace;
+
+  --text-2xs: 0.6875rem;
+  --text-2xs--line-height: 1rem;
+
+  --radius-card: 0.75rem;
+
+  --shadow-panel: 0 1px 2px rgb(14 18 24 / 0.05), 0 8px 24px -12px rgb(14 18 24 / 0.14);
+  --shadow-pop: 0 4px 12px -2px rgb(14 18 24 / 0.12), 0 16px 40px -12px rgb(14 18 24 / 0.28);
+}
+
+/* ---------------------------------------------------------------------------
+   Semantic surface tokens. Components reference these, never raw ink-*, so
+   the dark theme is a single block of overrides instead of hundreds of
+   `dark:` variants.
+   --------------------------------------------------------------------------- */
+:root {
+  --surface-app: var(--color-ink-50);
+  --surface-panel: #ffffff;
+  --surface-raised: #ffffff;
+  --surface-sunken: var(--color-ink-100);
+  --surface-hover: var(--color-ink-100);
+  --surface-active: var(--color-ink-150);
+
+  --border-subtle: var(--color-ink-200);
+  --border-strong: var(--color-ink-300);
+
+  --text-primary: var(--color-ink-900);
+  --text-secondary: var(--color-ink-600);
+  --text-muted: var(--color-ink-500);
+  --text-faint: var(--color-ink-400);
+  --text-onbrand: #ffffff;
+
+  --accent: var(--color-brand-600);
+  --accent-hover: var(--color-brand-700);
+  /* Text/icon colour to sit ON --accent. Split from --text-onbrand because the
+     accent inverts between themes: light mode is a dark red that needs white
+     (5.33:1), dark mode is a bright pink that needs ink (6.44:1). White on the
+     dark-mode accent would be 2.84:1 — below the 4.5:1 text floor. */
+  --accent-fg: #ffffff;
+  --accent-soft: var(--color-brand-50);
+  --accent-softer: color-mix(in oklab, var(--color-brand-500) 8%, transparent);
+
+  --ring: color-mix(in oklab, var(--color-brand-500) 45%, transparent);
+
+  color-scheme: light;
+}
+
+.dark {
+  --surface-app: var(--color-ink-950);
+  --surface-panel: var(--color-ink-900);
+  --surface-raised: var(--color-ink-850);
+  --surface-sunken: #08090c;
+  --surface-hover: var(--color-ink-850);
+  --surface-active: var(--color-ink-800);
+
+  --border-subtle: color-mix(in oklab, var(--color-ink-300) 14%, transparent);
+  --border-strong: color-mix(in oklab, var(--color-ink-300) 26%, transparent);
+
+  --text-primary: #eef1f6;
+  --text-secondary: var(--color-ink-300);
+  --text-muted: var(--color-ink-400);
+  --text-faint: var(--color-ink-500);
+
+  --accent: var(--color-brand-400);
+  --accent-hover: var(--color-brand-300);
+  --accent-fg: var(--color-ink-950);
+  --accent-soft: color-mix(in oklab, var(--color-brand-500) 16%, transparent);
+  --accent-softer: color-mix(in oklab, var(--color-brand-500) 10%, transparent);
+
+  --color-live-500: #2fbe86;
+  --color-live-100: color-mix(in oklab, #2fbe86 18%, transparent);
+  --color-soon-500: #f0a733;
+  --color-soon-100: color-mix(in oklab, #f0a733 18%, transparent);
+  --color-info-100: color-mix(in oklab, #4b9cf5 18%, transparent);
+  --color-info-500: #63aaf7;
+
+  /* Same eight hues, re-stepped for the dark surface — a selected palette,
+     not an automatic flip. All six checks pass on #12151a. */
+  --color-viz-1: #3987e5;
+  --color-viz-2: #d95926;
+  --color-viz-3: #199e70;
+  --color-viz-4: #c98500;
+  --color-viz-5: #d55181;
+  --color-viz-6: #008300;
+
+  color-scheme: dark;
+}
+
+/* --------------------------------------------------------------------------- */
+
+@layer base {
+  * {
+    border-color: var(--border-subtle);
+  }
+
+  html {
+    -webkit-text-size-adjust: 100%;
+  }
+
+  body {
+    background: var(--surface-app);
+    color: var(--text-primary);
+    font-family: var(--font-sans);
+    font-size: 0.875rem;
+    line-height: 1.5;
+    -webkit-font-smoothing: antialiased;
+    text-rendering: optimizeLegibility;
+    /* Every number in this app is compared against another number. */
+    font-variant-numeric: tabular-nums;
+  }
+
+  /* Arabic needs a touch more leading and no tabular squeeze on prose. */
+  [dir='rtl'] body {
+    line-height: 1.7;
+  }
+
+  h1,
+  h2,
+  h3,
+  h4 {
+    color: var(--text-primary);
+    font-weight: 600;
+    letter-spacing: -0.011em;
+    text-wrap: balance;
+  }
+
+  a {
+    color: inherit;
+    text-decoration: none;
+  }
+
+  ::selection {
+    background: color-mix(in oklab, var(--accent) 25%, transparent);
+  }
+
+  :focus-visible {
+    outline: 2px solid var(--ring);
+    outline-offset: 2px;
+    border-radius: 4px;
+  }
+
+  /* Scrollbars that don't shout. */
+  * {
+    scrollbar-width: thin;
+    scrollbar-color: var(--border-strong) transparent;
+  }
+  *::-webkit-scrollbar {
+    width: 10px;
+    height: 10px;
+  }
+  *::-webkit-scrollbar-thumb {
+    background: var(--border-strong);
+    border-radius: 6px;
+    border: 3px solid transparent;
+    background-clip: content-box;
+  }
+  *::-webkit-scrollbar-track {
+    background: transparent;
+  }
+
+  input,
+  textarea,
+  select,
+  button {
+    font: inherit;
+    color: inherit;
+  }
+
+  /* The date pickers and selects in dark mode need the hint. */
+  .dark input[type='date'],
+  .dark input[type='datetime-local'] {
+    color-scheme: dark;
+  }
+}
+
+/* ---------------------------------------------------------------------------
+   Component utilities. Kept few and composable — the point is consistency,
+   not a second framework.
+   --------------------------------------------------------------------------- */
+
+@utility panel {
+  background: var(--surface-panel);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-card);
+}
+
+@utility panel-pad {
+  padding: 1rem 1.125rem;
+}
+
+@utility hairline {
+  border-color: var(--border-subtle);
+}
+
+@utility surface-hover {
+  &:hover {
+    background: var(--surface-hover);
+  }
+}
+
+@utility text-secondary {
+  color: var(--text-secondary);
+}
+@utility text-muted {
+  color: var(--text-muted);
+}
+@utility text-faint {
+  color: var(--text-faint);
+}
+
+@utility label-xs {
+  font-size: var(--text-2xs);
+  line-height: 1rem;
+  font-weight: 600;
+  letter-spacing: 0.055em;
+  text-transform: uppercase;
+  color: var(--text-faint);
+}
+
+@utility num {
+  font-variant-numeric: tabular-nums;
+  font-feature-settings: 'tnum' 1;
+}
+
+/* Truncate to N lines. */
+@utility clamp-1 {
+  display: -webkit-box;
+  -webkit-line-clamp: 1;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+@utility clamp-2 {
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+@utility clamp-3 {
+  display: -webkit-box;
+  -webkit-line-clamp: 3;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+/* Mixed FR/AR strings render correctly only with an explicit isolate. */
+@utility bidi-isolate {
+  unicode-bidi: isolate;
+}
+
+/* Logical-direction helper for icons that must mirror in RTL. */
+@utility flip-rtl {
+  [dir='rtl'] & {
+    transform: scaleX(-1);
+  }
+}
+
+@keyframes mq-fade-up {
+  from {
+    opacity: 0;
+    transform: translateY(4px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+@utility animate-fade-up {
+  animation: mq-fade-up 0.22s cubic-bezier(0.22, 0.61, 0.36, 1) both;
+}
+
+@keyframes mq-pulse-ring {
+  0% {
+    box-shadow: 0 0 0 0 color-mix(in oklab, var(--color-soon-500) 55%, transparent);
+  }
+  70% {
+    box-shadow: 0 0 0 7px transparent;
+  }
+  100% {
+    box-shadow: 0 0 0 0 transparent;
+  }
+}
+@utility animate-pulse-ring {
+  animation: mq-pulse-ring 2.4s ease-out infinite;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.001ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.001ms !important;
+  }
+}

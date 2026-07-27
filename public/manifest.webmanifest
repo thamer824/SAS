@@ -1,0 +1,36 @@
+{
+  "name": "Mounaqasat — Veille des marchés publics tunisiens",
+  "short_name": "Mounaqasat",
+  "description": "Toutes les consultations et appels d'offres publics tunisiens, réunis, filtrés et poussés vers vous dès leur publication.",
+  "start_url": "/app",
+  "scope": "/",
+  "display": "standalone",
+  "orientation": "portrait-primary",
+  "background_color": "#f7f8fa",
+  "theme_color": "#ce2342",
+  "lang": "fr",
+  "dir": "auto",
+  "categories": ["business", "productivity", "government"],
+  "icons": [
+    {
+      "src": "/icon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
+    }
+  ],
+  "shortcuts": [
+    {
+      "name": "Opportunités",
+      "url": "/app/tenders"
+    },
+    {
+      "name": "Mes veilles",
+      "url": "/app/watchlists"
+    },
+    {
+      "name": "Pipeline",
+      "url": "/app/pipeline"
+    }
+  ]
+}

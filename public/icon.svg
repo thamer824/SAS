@@ -1,0 +1,9 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" role="img" aria-label="Mounaqasat">
+  <rect width="64" height="64" rx="14" fill="#ce2342"/>
+  <path d="M41 12.8a24 24 0 1 0 14.1 33.6A19.2 19.2 0 0 1 41 12.8Z" fill="#fff" opacity="0.96"/>
+  <g stroke="#ce2342" stroke-width="4.2" stroke-linecap="round">
+    <path d="M21 25h13"/>
+    <path d="M21 34h18"/>
+    <path d="M21 43h10"/>
+  </g>
+</svg>

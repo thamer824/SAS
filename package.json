@@ -1,0 +1,48 @@
+{
+  "name": "mounaqasat",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Mounaqasat — veille et intelligence des marchés publics tunisiens (TUNEPS)",
+  "scripts": {
+    "dev": "next dev",
+    "build": "next build",
+    "start": "next start",
+    "db:migrate": "tsx scripts/migrate.ts",
+    "db:reset": "tsx scripts/reset.ts",
+    "sync": "tsx scripts/sync.ts",
+    "sync:backfill": "tsx scripts/sync.ts --backfill --max=14000 --details=500",
+    "worker": "tsx scripts/worker.ts",
+    "seed:demo": "tsx scripts/seed-demo.ts",
+    "api:token": "tsx scripts/mktoken.ts",
+    "verify": "tsx scripts/verify.ts",
+    "verify:http": "node scripts/verify-http.mjs",
+    "shots": "node scripts/screenshot.mjs",
+    "probe:codes": "node scripts/probe-codes.mjs 6",
+    "verify:flow": "node scripts/verify-flow.mjs"
+  },
+  "dependencies": {
+    "better-sqlite3": "^11.10.0",
+    "next": "^15.3.3",
+    "nodemailer": "^6.9.16",
+    "react": "^19.1.0",
+    "react-dom": "^19.1.0",
+    "web-push": "^3.6.7",
+    "zod": "^3.24.1"
+  },
+  "devDependencies": {
+    "@tailwindcss/postcss": "^4.1.8",
+    "@types/better-sqlite3": "^7.6.12",
+    "@types/node": "^22.15.0",
+    "@types/nodemailer": "^6.4.17",
+    "@types/react": "^19.1.0",
+    "@types/react-dom": "^19.1.0",
+    "@types/web-push": "^3.6.4",
+    "playwright-core": "^1.49.0",
+    "tailwindcss": "^4.1.8",
+    "tsx": "^4.19.4",
+    "typescript": "^5.8.3"
+  },
+  "engines": {
+    "node": ">=20.11"
+  }
+}
