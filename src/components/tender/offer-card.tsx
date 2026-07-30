@@ -160,24 +160,20 @@ export function OfferCard({
             <Icon.chevronRight size={13} className="flip-rtl" />
           </Link>
 
-          <span className="flex items-center gap-2.5">
-            {score !== undefined && score >= 40 ? (
-              <span
-                className="num rounded-md bg-[var(--accent-soft)] px-1.5 py-0.5 text-2xs font-bold text-[var(--accent)]"
-                title={t('dash.fitScore')}
-              >
-                {score}
-              </span>
-            ) : null}
-            {saved ? (
-              <span
-                className="inline-flex items-center gap-1 text-2xs font-medium text-[var(--accent)]"
-                title={t('feed.saved')}
-              >
-                <Icon.bookmark size={12} />
-              </span>
-            ) : null}
-          </span>
+          {/* No relevance number here. The feed is already filtered to the
+              user's own criteria, so a bare "62" explained nothing and read as
+              a mysterious code — the exact kind of thing that makes software
+              feel unapproachable. The score still drives ordering and lives on
+              the detail page with a label. */}
+          {saved ? (
+            <span
+              className="inline-flex items-center gap-1.5 text-xs font-semibold text-[var(--accent)]"
+              title={t('feed.saved')}
+            >
+              <Icon.bookmark size={14} />
+              {t('feed.saved')}
+            </span>
+          ) : null}
         </div>
       </div>
     </article>

@@ -13,8 +13,10 @@ import {
   type SearchParams,
 } from '@/lib/queries/params'
 import { trackedTenderIds } from '@/lib/queries/pipeline'
-import { fitScore, orgWatchlists, parseCriteria } from '@/lib/match/engine'
-import { PageHeader, Panel } from '@/components/ui/primitives'
+import { describeIntake, getIntake } from '@/lib/queries/intake'
+import { fitScore, orgWatchlists } from '@/lib/match/engine'
+import { CriteriaHeader } from '@/components/feed/criteria-header'
+import { Panel } from '@/components/ui/primitives'
 import { ActiveFilterChips, FilterPanel } from '@/components/feed/filters'
 import { FeedToolbar, Pagination } from '@/components/feed/toolbar'
 import { AlertStrip, QuickBar } from '@/components/feed/quick-bar'
@@ -40,32 +42,33 @@ export default async function OffersPage({
   const org = orgProfile(user)
   const d = ensureDb()
 
+  const intake = getIntake(org.id, user.id)
   const watchlists = orgWatchlists(org.id)
 
-  // A brand-new org goes to setup first: an empty feed teaches nothing, whereas
-  // picking a sector makes the product explain itself.
-  const skipped = d
-    .prepare<[string], { value: string }>('SELECT value FROM kv WHERE key = ?')
-    .get(`onboarded:${org.id}`)
-  if (watchlists.length === 0 && !skipped) redirect('/bienvenue')
+  // Nobody sees an unfiltered feed before answering the four questions: an
+  // unfiltered list teaches nothing, whereas the form makes the product explain
+  // itself and produces the alert in the same step.
+  if (!intake?.completed) redirect('/bienvenue')
 
   const params = await searchParams
   const parsed = parseFeedParams(params)
 
-  // "Pour moi" = the union of every sector/region this org actually watches.
+  // Default to the user's own criteria. Seeing "everything" is the exception,
+  // reached by an explicit "Voir tout".
+  const showingMine = params.all !== '1'
+
   let filters = parsed.filters
-  if (parsed.raw.mine && watchlists.length) {
-    const cats = new Set<string>()
-    const govs = new Set<string>()
-    for (const w of watchlists) {
-      const c = parseCriteria(w.criteria)
-      for (const x of c.categoryCodes ?? []) cats.add(x)
-      for (const x of c.govCodes ?? []) govs.add(x)
-    }
+  if (showingMine) {
     filters = {
       ...filters,
-      categoryCodes: filters.categoryCodes?.length ? filters.categoryCodes : [...cats],
-      govCodes: filters.govCodes?.length ? filters.govCodes : [...govs],
+      // An explicit chip choice always wins over the saved criteria, so the
+      // quick filters still work while "mes offres" is on.
+      categoryCodes: filters.categoryCodes?.length ? filters.categoryCodes : intake.categoryCodes,
+      govCodes: filters.govCodes?.length
+        ? filters.govCodes
+        : intake.regionScope === 'regions'
+          ? intake.govCodes
+          : undefined,
     }
   }
 
@@ -102,18 +105,25 @@ export default async function OffersPage({
     parsed.raw.q ? `&name=${encodeURIComponent(parsed.raw.q)}` : ''
   }`
 
+  const described = describeIntake(intake, locale, t('criteria.allTunisia'))
+
   return (
     <>
-      <PageHeader
-        title={t('feed.simple.title')}
-        subtitle={t('feed.simple.subtitle', { n: formatNumber(openTotal, locale) })}
+      <CriteriaHeader
+        t={t}
+        sectors={described.sectors}
+        regions={described.regions}
+        count={formatNumber(showingMine ? total : openTotal, locale)}
+        showingMine={showingMine}
+        toggleHref={showingMine ? `${FEED_PATH}?all=1` : FEED_PATH}
+        editHref="/bienvenue?edit=1"
       />
 
       <AlertStrip
         count={freshMatches}
         t={t}
-        href={`${FEED_PATH}?mine=1`}
-        emptyHref="/bienvenue"
+        href={FEED_PATH}
+        emptyHref="/bienvenue?edit=1"
         hasAlerts={watchlists.length > 0}
       />
 
@@ -123,7 +133,6 @@ export default async function OffersPage({
         locale={locale}
         t={t}
         feedPath={FEED_PATH}
-        hasAlerts={watchlists.length > 0}
         showAdvanced={parsed.advanced}
       />
 

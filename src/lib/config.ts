@@ -55,6 +55,27 @@ export const config = {
       return Boolean(this.botToken)
     },
   },
+
+  /**
+   * WhatsApp Business Cloud API (Meta).
+   *
+   * The channel this market actually reads — a Tunisian contractor checks
+   * WhatsApp dozens of times a day and e-mail maybe once. Requires a Meta
+   * business account, a verified sender number, and — for messages sent outside
+   * a 24-hour customer-initiated window, which is every alert we send — an
+   * APPROVED MESSAGE TEMPLATE. Free-form text will be silently dropped by Meta,
+   * so `templateName` is not optional in practice.
+   */
+  whatsapp: {
+    token: env('WHATSAPP_TOKEN'),
+    phoneNumberId: env('WHATSAPP_PHONE_NUMBER_ID'),
+    templateName: env('WHATSAPP_TEMPLATE_NAME', 'nouveaux_avis'),
+    templateLang: env('WHATSAPP_TEMPLATE_LANG', 'fr'),
+    apiVersion: env('WHATSAPP_API_VERSION', 'v21.0'),
+    get enabled() {
+      return Boolean(this.token && this.phoneNumberId)
+    },
+  },
 } as const
 
 export const isProd = process.env.NODE_ENV === 'production'

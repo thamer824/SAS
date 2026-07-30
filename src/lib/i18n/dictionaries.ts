@@ -17,6 +17,7 @@ export const fr = {
   // Plain words beat correct jargon. A contractor knows "alerte" and "favoris";
   // "veille" and "pipeline" are consultant vocabulary that costs us signups.
   'nav.offers': 'Les offres',
+  'nav.account': 'Mon compte',
   'nav.alerts': 'Mes alertes',
   'nav.favorites': 'Mes favoris',
   'nav.market': 'Le marché',
@@ -413,7 +414,55 @@ export const fr = {
   'fit.weak': 'Faible adéquation',
   'fit.explain': 'Calculé depuis les compétences déclarées dans votre profil entreprise.',
 
-  // --- onboarding (the whole product in one screen) -----------------------
+  // --- the intake form: four questions, nothing else ----------------------
+  // Wording supplied by the product owner; keep it verbatim in both languages.
+  'form.title': 'Dites-nous ce que vous cherchez',
+  'form.subtitle':
+    'Quatre questions. Ensuite vous voyez directement les appels d’offres qui vous concernent, et nous vous prévenons dès qu’il y en a de nouveaux.',
+  'form.stepOf': 'Question {n} sur 4',
+
+  'form.q1': 'Quel est le nom de votre société ?',
+  'form.q1.placeholder': 'Ex. Sarl Ben Salah Travaux',
+
+  'form.q2': 'Dans quel(s) domaine(s) votre société intervient-elle ?',
+  'form.q2.hint': 'Vous pouvez sélectionner plusieurs domaines.',
+  'form.q2.chosen': '{n} domaine choisi',
+  'form.q2.chosenPlural': '{n} domaines choisis',
+  'form.q2.needOne': 'Choisissez au moins un domaine.',
+  'form.q2.showAll': 'Voir tous les domaines (+{n})',
+  'form.q2.showLess': 'Voir moins de domaines',
+
+  'form.q3': 'Dans quelle(s) région(s) souhaitez-vous recevoir des appels d’offres ?',
+  'form.q3.all': 'Toute la Tunisie',
+  'form.q3.all.hint': 'Vous recevez les appels d’offres de toutes les régions.',
+  'form.q3.some': 'Choisir une ou plusieurs régions',
+  'form.q3.some.hint': 'Uniquement les régions que vous sélectionnez.',
+  'form.q3.needOne': 'Choisissez au moins une région.',
+
+  'form.q4': 'Comment souhaitez-vous recevoir les notifications des nouveaux appels d’offres ?',
+  'form.q4.email': 'E-mail',
+  'form.q4.whatsapp': 'WhatsApp',
+  'form.q4.both': 'E-mail et WhatsApp',
+  'form.q4.phone': 'Votre numéro WhatsApp',
+  'form.q4.phone.hint': 'Ex. 24 123 456 — nous ajoutons l’indicatif +216.',
+  'form.q4.phone.invalid': 'Numéro invalide. Entrez 8 chiffres, ex. 24 123 456.',
+
+  'form.submit': 'Voir mes appels d’offres',
+  'form.submitting': 'Un instant…',
+  'form.preview': 'Environ {n} appels d’offres correspondent en ce moment',
+  'form.previewNone': 'Choisissez un domaine pour voir combien d’offres vous attendent',
+  'form.edit': 'Modifier mes critères',
+  'form.saved': 'Vos critères sont enregistrés.',
+  'form.later': 'Plus tard',
+
+  'criteria.yourOffers': 'Vos appels d’offres',
+  'criteria.summary': 'Vos critères',
+  'criteria.allTunisia': 'Toute la Tunisie',
+  'criteria.showingAll': 'Tous les appels d’offres',
+  'criteria.showMine': 'Voir uniquement les miens',
+  'criteria.showAll': 'Voir tout',
+
+  // --- legacy onboarding keys (still referenced by the advanced screens) --
   'onb.title': 'Que cherchez-vous ?',
   'onb.subtitle':
     'Choisissez vos secteurs. Nous surveillons TUNEPS pour vous et nous vous prévenons dès qu’un avis correspond.',
@@ -471,6 +520,7 @@ export const ar = {
 
   'nav.dashboard': 'لوحة القيادة',
   'nav.offers': 'العروض',
+  'nav.account': 'حسابي',
   'nav.alerts': 'تنبيهاتي',
   'nav.favorites': 'مفضّلاتي',
   'nav.market': 'السوق',
@@ -844,6 +894,52 @@ export const ar = {
   'fit.medium': 'ملاءمة متوسطة',
   'fit.weak': 'ملاءمة ضعيفة',
   'fit.explain': 'محسوبة من الاختصاصات المعلنة في ملف مؤسستك.',
+
+  'form.title': 'أخبرنا بما تبحث عنه',
+  'form.subtitle':
+    'أربعة أسئلة. بعدها ترى مباشرة طلبات العروض التي تهمّك، ونُعلمك بمجرّد ظهور جديد.',
+  'form.stepOf': 'السؤال {n} من 4',
+
+  'form.q1': 'ما اسم شركتكم؟',
+  'form.q1.placeholder': 'مثال: شركة بن صالح للأشغال',
+
+  'form.q2': 'في أي مجال أو مجالات تنشط شركتكم؟',
+  'form.q2.hint': 'يمكنكم اختيار أكثر من مجال.',
+  'form.q2.chosen': 'تم اختيار مجال واحد',
+  'form.q2.chosenPlural': 'تم اختيار {n} مجالات',
+  'form.q2.needOne': 'اختر مجالًا واحدًا على الأقل.',
+  'form.q2.showAll': 'عرض كل المجالات (+{n})',
+  'form.q2.showLess': 'عرض مجالات أقل',
+
+  'form.q3': 'في أي ولاية أو منطقة ترغبون في تلقي طلبات العروض؟',
+  'form.q3.all': 'كامل تراب الجمهورية التونسية',
+  'form.q3.all.hint': 'ستتلقّون طلبات العروض من كل الولايات.',
+  'form.q3.some': 'اختيار ولاية أو أكثر',
+  'form.q3.some.hint': 'الولايات التي تختارونها فقط.',
+  'form.q3.needOne': 'اختر ولاية واحدة على الأقل.',
+
+  'form.q4': 'كيف ترغبون في استلام إشعارات طلبات العروض الجديدة؟',
+  'form.q4.email': 'البريد الإلكتروني',
+  'form.q4.whatsapp': 'واتساب',
+  'form.q4.both': 'البريد الإلكتروني وواتساب',
+  'form.q4.phone': 'رقم الواتساب',
+  'form.q4.phone.hint': 'مثال: 24 123 456 — نضيف المفتاح ‎+216.',
+  'form.q4.phone.invalid': 'رقم غير صالح. أدخل 8 أرقام، مثال: 24 123 456.',
+
+  'form.submit': 'عرض طلبات العروض الخاصة بي',
+  'form.submitting': 'لحظة…',
+  'form.preview': 'حوالي {n} طلب عروض مطابق حاليًا',
+  'form.previewNone': 'اختر مجالًا لمعرفة عدد العروض التي تنتظرك',
+  'form.edit': 'تعديل معاييري',
+  'form.saved': 'تم حفظ معاييرك.',
+  'form.later': 'لاحقًا',
+
+  'criteria.yourOffers': 'طلبات العروض الخاصة بك',
+  'criteria.summary': 'معاييرك',
+  'criteria.allTunisia': 'كل تونس',
+  'criteria.showingAll': 'كل طلبات العروض',
+  'criteria.showMine': 'عرض ما يهمّني فقط',
+  'criteria.showAll': 'عرض الكل',
 
   'onb.title': 'ماذا تبحث عنه؟',
   'onb.subtitle': 'اختر قطاعاتك. نراقب TUNEPS بدلًا عنك ونُعلمك بمجرّد نشر إعلان يطابقها.',

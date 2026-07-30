@@ -35,8 +35,8 @@ function Chip({
       href={href}
       scroll={false}
       className={cx(
-        'inline-flex shrink-0 items-center gap-1.5 rounded-full border px-3 py-1.5',
-        'text-xs font-medium transition-colors bidi-isolate',
+        'inline-flex min-h-9 shrink-0 items-center gap-1.5 rounded-full border-2 px-3.5',
+        'text-sm font-medium transition-colors bidi-isolate',
         active
           ? tone === 'warn'
             ? 'border-soon-500 bg-[var(--color-soon-100)] text-soon-600 dark:text-soon-500'
@@ -55,7 +55,6 @@ export function QuickBar({
   locale,
   t,
   feedPath,
-  hasAlerts,
   showAdvanced,
 }: {
   params: SearchParams
@@ -63,8 +62,6 @@ export function QuickBar({
   locale: Locale
   t: Translator
   feedPath: string
-  /** Enables the "Pour moi" preset, which needs at least one alert to mean anything. */
-  hasAlerts: boolean
   showAdvanced: boolean
 }) {
   const { raw } = parsed
@@ -77,22 +74,15 @@ export function QuickBar({
   )
 
   const nothingActive =
-    !raw.domains.length && !raw.categories.length && raw.status === 'open' && !raw.mine
+    !raw.domains.length && !raw.categories.length && raw.status === 'open' && !raw.since
 
   return (
     <div className="mb-4 space-y-2.5">
       {/* --- row 1: intent presets --- */}
-      <div className="-mx-3 flex items-center gap-1.5 overflow-x-auto px-3 pb-0.5 sm:mx-0 sm:px-0">
+      <div className="scroll-fade -mx-3 flex items-center gap-2 overflow-x-auto px-3 pb-1 sm:mx-0 sm:px-0">
         <Chip href={feedPath} active={nothingActive}>
           {t('feed.quick.all')}
         </Chip>
-
-        {hasAlerts ? (
-          <Chip href={buildQuery(params, { mine: !raw.mine })} active={raw.mine}>
-            <Icon.spark size={12} />
-            {t('feed.quick.forMe')}
-          </Chip>
-        ) : null}
 
         <Chip
           href={buildQuery(params, { status: raw.status === 'closing' ? null : 'closing' })}
@@ -124,7 +114,7 @@ export function QuickBar({
       </div>
 
       {/* --- row 2: high-volume sectors --- */}
-      <div className="-mx-3 flex items-center gap-1.5 overflow-x-auto px-3 pb-0.5 sm:mx-0 sm:px-0">
+      <div className="scroll-fade -mx-3 flex items-center gap-2 overflow-x-auto px-3 pb-1 sm:mx-0 sm:px-0">
         {sectors.map((s) => (
           <Chip
             key={s.code}
@@ -139,7 +129,7 @@ export function QuickBar({
           href={buildQuery(params, { adv: showAdvanced ? null : true })}
           scroll={false}
           className={cx(
-            'inline-flex shrink-0 items-center gap-1.5 rounded-full px-3 py-1.5 text-xs font-medium transition-colors',
+            'inline-flex min-h-9 shrink-0 items-center gap-1.5 rounded-full px-3.5 text-sm font-medium transition-colors',
             showAdvanced
               ? 'bg-[var(--surface-active)] text-[var(--text-primary)]'
               : 'text-[var(--text-muted)] hover:bg-[var(--surface-hover)]',

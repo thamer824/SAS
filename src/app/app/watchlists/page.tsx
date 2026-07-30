@@ -50,7 +50,7 @@ export default async function WatchlistsPage() {
           <>
             {/* Sector picker first, advanced form second: most people want the
                 former and would bounce off the latter. */}
-            <LinkButton href="/bienvenue?again=1" size="md">
+            <LinkButton href="/bienvenue?edit=1" size="md">
               <Icon.plus size={15} />
               {t('watchlist.new')}
             </LinkButton>
@@ -68,7 +68,7 @@ export default async function WatchlistsPage() {
             title={t('watchlist.empty.title')}
             body={t('watchlist.empty.body')}
             action={
-              <LinkButton href="/bienvenue?again=1" size="md">
+              <LinkButton href="/bienvenue?edit=1" size="md">
                 <Icon.plus size={15} />
                 {t('watchlist.new')}
               </LinkButton>

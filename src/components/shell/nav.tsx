@@ -22,13 +22,21 @@ export interface NavItem {
  *
  * The routes still exist; they just don't compete for attention.
  */
+/**
+ * Three items. That is the whole app for a normal user:
+ *   see the offers · check what you get alerted about · your account.
+ *
+ * Everything else still exists at its URL — the pipeline, the market analytics,
+ * the buyer directory, the notification list — but none of it belongs in a rail
+ * a first-time user has to parse. They are reached from the place where they
+ * make sense (a saved offer, a buyer's name, the bell) instead of competing for
+ * attention with the one screen that matters.
+ */
 export function navItems(t: Translator, badges: { notifications?: number } = {}): NavItem[] {
   return [
     { href: '/app', label: t('nav.offers'), icon: 'layers', exact: true },
     { href: '/app/watchlists', label: t('nav.alerts'), icon: 'bell', badge: badges.notifications },
-    { href: '/app/pipeline', label: t('nav.favorites'), icon: 'bookmark' },
-    { href: '/app/insights', label: t('nav.market'), icon: 'chart' },
-    { href: '/app/settings', label: t('nav.settings'), icon: 'settings' },
+    { href: '/app/settings', label: t('nav.account'), icon: 'settings' },
   ]
 }
 

@@ -28,10 +28,15 @@ const BUTTON_VARIANT: Record<ButtonVariant, string> = {
   danger: 'bg-brand-700 text-white hover:bg-brand-800',
 }
 
+/**
+ * Sizes are up across the board. `md` is now 44px and `lg` 52px — at or above
+ * the 44px minimum touch target, which the old 36px `md` was not. `sm` is for
+ * dense secondary controls only, never for a primary action.
+ */
 const BUTTON_SIZE: Record<ButtonSize, string> = {
-  sm: 'h-7 px-2.5 text-xs',
-  md: 'h-9 px-3.5 text-[0.8125rem]',
-  lg: 'h-11 px-5 text-sm',
+  sm: 'h-8 px-3 text-xs',
+  md: 'h-11 px-4 text-sm',
+  lg: 'h-13 px-6 text-base',
 }
 
 export function buttonClass(variant: ButtonVariant = 'primary', size: ButtonSize = 'md', extra?: string) {
@@ -302,8 +307,8 @@ export function Field({
 }
 
 export const inputClass =
-  'w-full rounded-lg border border-[var(--border-strong)] bg-[var(--surface-panel)] ' +
-  'px-3 py-2 text-[0.8125rem] text-[var(--text-primary)] ' +
+  'w-full rounded-xl border border-[var(--border-strong)] bg-[var(--surface-panel)] ' +
+  'px-3.5 py-2.5 text-[0.9375rem] text-[var(--text-primary)] ' +
   'placeholder:text-[var(--text-faint)] ' +
   'focus:border-[var(--accent)] focus:outline-none focus:ring-2 focus:ring-[var(--ring)] ' +
   'transition-[border-color,box-shadow] duration-150'

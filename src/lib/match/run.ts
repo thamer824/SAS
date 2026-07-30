@@ -1,5 +1,6 @@
 import { SQL_NOW, SQL_NOW_PLUS } from '@/db/sql'
 import { ensureDb, nowIso } from '@/db'
+import { config } from '@/lib/config'
 import { isLocale, type Locale } from '@/lib/i18n'
 import { getTendersByIds, searchTenders, type TenderRow } from '@/lib/queries/tenders'
 import { daysUntil } from '@/lib/tuneps/dates'
@@ -8,6 +9,7 @@ import {
   sendEmail,
   sendTelegram,
   sendWebPush,
+  sendWhatsApp,
   type Channel,
 } from '@/lib/notify/channels'
 import { deadlineEmail, matchEmail, matchTelegram } from '@/lib/notify/templates'
@@ -52,13 +54,15 @@ interface Recipient {
   full_name: string
   locale: Locale
   telegram_chat_id: string | null
+  whatsapp_number: string | null
 }
 
 /** Everyone in the watchlist's org gets the alert — this is a team product. */
 function recipients(orgId: string): Recipient[] {
   return ensureDb()
     .prepare<[string], Omit<Recipient, 'locale'> & { locale: string }>(
-      `SELECT u.id AS user_id, u.email, u.full_name, u.locale, u.telegram_chat_id
+      `SELECT u.id AS user_id, u.email, u.full_name, u.locale,
+              u.telegram_chat_id, u.whatsapp_number
          FROM org_members m JOIN users u ON u.id = m.user_id
         WHERE m.org_id = ?`,
     )
@@ -123,6 +127,34 @@ async function deliver(
     if (channels.has('telegram') && person.telegram_chat_id) {
       const r = await sendTelegram(person.user_id, person.telegram_chat_id, matchTelegram(payload))
       if (r.status === 'sent') deliveries++
+    }
+
+    if (channels.has('whatsapp') && person.whatsapp_number) {
+      const first = matches[0].tender
+      const title = (first.title_fr || first.title_ar || first.reference).slice(0, 90)
+      const left = daysUntil(first.deadline_at)
+
+      // Template parameters, in the order the approved Meta template expects:
+      //   1 = alert name, 2 = how many, 3 = first title, 4 = days remaining.
+      // Meta rejects newlines and tabs inside a parameter, hence the cleanup.
+      const clean = (s: string) => s.replace(/[\r\n\t]+/g, ' ').trim()
+      const r = await sendWhatsApp(person.user_id, person.whatsapp_number, {
+        params: [
+          clean(w.name),
+          String(matches.length),
+          clean(title),
+          left !== null && left >= 0 ? String(left) : '0',
+        ],
+        // Appended to the template's URL button so the link opens the alert.
+        urlSuffix: `app/watchlists/${w.id}`,
+        preview:
+          `${w.name} — ${matches.length} nouveau(x) avis\n` +
+          `${title}\n` +
+          (left !== null && left >= 0 ? `Échéance dans ${left} jour(s)\n` : '') +
+          `${config.appUrl}/app/watchlists/${w.id}`,
+      })
+      if (r.status === 'sent') deliveries++
+      else if (r.status === 'failed') log(`whatsapp → ${person.user_id} failed: ${r.error}`)
     }
   }
 

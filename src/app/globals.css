@@ -81,7 +81,8 @@
   --text-2xs: 0.6875rem;
   --text-2xs--line-height: 1rem;
 
-  --radius-card: 0.75rem;
+  /* Softer, larger radii read as friendlier and less "enterprise dashboard". */
+  --radius-card: 1rem;
 
   --shadow-panel: 0 1px 2px rgb(14 18 24 / 0.05), 0 8px 24px -12px rgb(14 18 24 / 0.14);
   --shadow-pop: 0 4px 12px -2px rgb(14 18 24 / 0.12), 0 16px 40px -12px rgb(14 18 24 / 0.28);
@@ -93,20 +94,25 @@
    `dark:` variants.
    --------------------------------------------------------------------------- */
 :root {
-  --surface-app: var(--color-ink-50);
+  /* Warm off-white rather than cool grey: reads as paper, not as a dashboard,
+     and it is what makes the white cards separate cleanly. */
+  --surface-app: #f6f4f1;
   --surface-panel: #ffffff;
   --surface-raised: #ffffff;
-  --surface-sunken: var(--color-ink-100);
-  --surface-hover: var(--color-ink-100);
-  --surface-active: var(--color-ink-150);
+  --surface-sunken: #efece8;
+  --surface-hover: #f4f1ed;
+  --surface-active: #e8e4de;
 
-  --border-subtle: var(--color-ink-200);
-  --border-strong: var(--color-ink-300);
+  --border-subtle: #e2ddd6;
+  --border-strong: #cbc4ba;
 
-  --text-primary: var(--color-ink-900);
-  --text-secondary: var(--color-ink-600);
-  --text-muted: var(--color-ink-500);
-  --text-faint: var(--color-ink-400);
+  /* Only three text levels, all well clear of 4.5:1 on white. The previous
+     four-level scale put real information at 3.5:1, which is a problem for the
+     50+ users who make up most of this audience. */
+  --text-primary: #17181a; /* 16.9:1 */
+  --text-secondary: #45484d; /* 9.3:1  */
+  --text-muted: #63666c; /* 5.9:1  */
+  --text-faint: #7c8087; /* 4.5:1  */
   --text-onbrand: #ffffff;
 
   --accent: var(--color-brand-600);
@@ -132,13 +138,13 @@
   --surface-hover: var(--color-ink-850);
   --surface-active: var(--color-ink-800);
 
-  --border-subtle: color-mix(in oklab, var(--color-ink-300) 14%, transparent);
-  --border-strong: color-mix(in oklab, var(--color-ink-300) 26%, transparent);
+  --border-subtle: color-mix(in oklab, var(--color-ink-300) 18%, transparent);
+  --border-strong: color-mix(in oklab, var(--color-ink-300) 32%, transparent);
 
-  --text-primary: #eef1f6;
-  --text-secondary: var(--color-ink-300);
-  --text-muted: var(--color-ink-400);
-  --text-faint: var(--color-ink-500);
+  --text-primary: #f2f4f8;
+  --text-secondary: #c5cbd4;
+  --text-muted: #a2a9b4;
+  --text-faint: #8b929c;
 
   --accent: var(--color-brand-400);
   --accent-hover: var(--color-brand-300);
@@ -174,14 +180,21 @@
 
   html {
     -webkit-text-size-adjust: 100%;
+    /* ONE LEVER for the whole interface.
+       Tailwind's sizes and spacing are rem-based, so raising the root font size
+       scales type, padding, gaps and tap targets together. 17px ≈ +6% over the
+       browser default, which lifts the smallest label in the app from 11px to
+       ~12px and body copy to 16px — the floor for comfortable reading at 50+,
+       which is most of this audience. Change this number, not the utilities. */
+    font-size: 17px;
   }
 
   body {
     background: var(--surface-app);
     color: var(--text-primary);
     font-family: var(--font-sans);
-    font-size: 0.875rem;
-    line-height: 1.5;
+    font-size: 0.9375rem;
+    line-height: 1.55;
     -webkit-font-smoothing: antialiased;
     text-rendering: optimizeLegibility;
     /* Every number in this app is compared against another number. */
@@ -330,6 +343,16 @@
 @utility flip-rtl {
   [dir='rtl'] & {
     transform: scaleX(-1);
+  }
+}
+
+/* Horizontal scrollers fade at the trailing edge instead of chopping a word in
+   half, which reads as a rendering bug rather than as "there is more". Uses a
+   logical-direction mask so it fades on the correct side in Arabic. */
+@utility scroll-fade {
+  mask-image: linear-gradient(to right, black 0, black calc(100% - 2.5rem), transparent 100%);
+  [dir='rtl'] & {
+    mask-image: linear-gradient(to left, black 0, black calc(100% - 2.5rem), transparent 100%);
   }
 }
 

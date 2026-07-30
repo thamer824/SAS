@@ -10,7 +10,7 @@ import { config } from '@/lib/config'
  * still gets their Telegram alert.
  */
 
-export type Channel = 'inapp' | 'email' | 'webpush' | 'telegram'
+export type Channel = 'inapp' | 'email' | 'webpush' | 'telegram' | 'whatsapp'
 
 export interface DeliveryResult {
   channel: Channel
@@ -178,6 +178,130 @@ export async function sendTelegram(
   } catch (err) {
     const r: DeliveryResult = { channel: 'telegram', status: 'failed', error: (err as Error).message }
     record(userId, r, 'telegram')
+    return r
+  }
+}
+
+// --- whatsapp --------------------------------------------------------------
+
+/**
+ * Normalise a Tunisian number to the E.164 digits Meta expects (no `+`).
+ *
+ * Accepts what people actually type: "24 123 456", "+216 24 123 456",
+ * "0024...", "216-24-123-456". Tunisian mobiles are 8 digits, so a bare 8-digit
+ * input gets the 216 country code prepended.
+ */
+export function normaliseWhatsApp(raw: string): string | null {
+  let digits = raw.replace(/[^\d]/g, '')
+
+  if (digits.startsWith('00')) digits = digits.slice(2)
+  if (digits.length === 8) digits = `216${digits}`
+  // A leading 0 before the local number is a domestic-dialling habit.
+  if (digits.length === 9 && digits.startsWith('0')) digits = `216${digits.slice(1)}`
+
+  if (!/^\d{10,15}$/.test(digits)) return null
+  return digits
+}
+
+export interface WhatsAppPayload {
+  /** Template body placeholders, in order. */
+  params: string[]
+  /** Appended to the template's URL button, when the template defines one. */
+  urlSuffix?: string
+  /** Plain-text equivalent, used by the outbox fallback and the delivery log. */
+  preview: string
+}
+
+/**
+ * Send a WhatsApp template message.
+ *
+ * Uses a template rather than free text on purpose: every alert we send is
+ * business-initiated and outside Meta's 24-hour service window, where free-form
+ * messages are dropped without an error the sender can see. When WhatsApp is not
+ * configured the message is written to the outbox so the flow stays testable.
+ */
+export async function sendWhatsApp(
+  userId: string,
+  toRaw: string,
+  payload: WhatsAppPayload,
+): Promise<DeliveryResult> {
+  const to = normaliseWhatsApp(toRaw)
+  if (!to) {
+    const r: DeliveryResult = { channel: 'whatsapp', status: 'failed', error: 'invalid number' }
+    record(userId, r, payload.preview)
+    return r
+  }
+
+  if (!config.whatsapp.enabled) {
+    // Dev fallback: same on-disk record as e-mail, so the whole alert path can
+    // be exercised without a Meta business account.
+    try {
+      fs.mkdirSync(config.mail.outboxDir, { recursive: true })
+      const slug = `whatsapp-${Date.now()}-${crypto.randomBytes(3).toString('hex')}.txt`
+      fs.writeFileSync(
+        path.join(config.mail.outboxDir, slug),
+        `To: +${to}\nTemplate: ${config.whatsapp.templateName}\n\n${payload.preview}\n`,
+      )
+    } catch {
+      // A failed dev write must not look like a delivery failure.
+    }
+    const r: DeliveryResult = { channel: 'whatsapp', status: 'skipped', error: 'not configured' }
+    record(userId, r, payload.preview)
+    return r
+  }
+
+  try {
+    const res = await fetch(
+      `https://graph.facebook.com/${config.whatsapp.apiVersion}/${config.whatsapp.phoneNumberId}/messages`,
+      {
+        method: 'POST',
+        headers: {
+          Authorization: `Bearer ${config.whatsapp.token}`,
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          messaging_product: 'whatsapp',
+          to,
+          type: 'template',
+          template: {
+            name: config.whatsapp.templateName,
+            language: { code: config.whatsapp.templateLang },
+            components: [
+              {
+                type: 'body',
+                parameters: payload.params.map((text) => ({ type: 'text', text })),
+              },
+              ...(payload.urlSuffix
+                ? [
+                    {
+                      type: 'button',
+                      sub_type: 'url',
+                      index: '0',
+                      parameters: [{ type: 'text', text: payload.urlSuffix }],
+                    },
+                  ]
+                : []),
+            ],
+          },
+        }),
+      },
+    )
+
+    if (!res.ok) {
+      const body = await res.text()
+      throw new Error(`whatsapp ${res.status}: ${body.slice(0, 240)}`)
+    }
+
+    const r: DeliveryResult = { channel: 'whatsapp', status: 'sent' }
+    record(userId, r, payload.preview)
+    return r
+  } catch (err) {
+    const r: DeliveryResult = {
+      channel: 'whatsapp',
+      status: 'failed',
+      error: (err as Error).message,
+    }
+    record(userId, r, payload.preview)
     return r
   }
 }
